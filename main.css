@@ -1,0 +1,34 @@
+html {
+  font-family: 'Open Sans Light',Helvetica,Arial,sans-serif;
+}
+
+#top-stuff > div {
+  display: inline-block;
+  vertical-align: top;
+  margin: 3em 0;
+}
+
+#user-input {
+  display: block;
+  margin: 1em 0;
+}
+
+#user-input {
+  width: 800px;
+  height: 300px;
+}
+
+#svg-anchor::before {
+  content: 'Rendered:';
+  vertical-align: top;
+  -webkit-margin-start: 2em;
+}
+
+#svg-anchor svg {
+  width: 576px;
+  height: 576px;
+}
+
+pre {
+  -webkit-margin-start: 2em;
+}
