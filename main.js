@@ -53,11 +53,17 @@ function ConvertInput() {
               currentCommand = commands[commands.length - 1];
             }
             // Insert implicit points.
-            if (currentCommand.command == 's' && currentCommand.args.length == 0) {
-              var lastCommand = commands[commands.length - 2];
-              var lgth = lastCommand.args.length;
-              currentCommand.args.push(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]);
-              currentCommand.args.push(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]);
+            if (currentCommand.command.toLowerCase() == 's' && currentCommand.args.length == 0) {
+              if (currentCommand.command == 's') {
+                var lastCommand = commands[commands.length - 2];
+                var lgth = lastCommand.args.length;
+                currentCommand.args.push(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]);
+                currentCommand.args.push(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]);
+              } else {
+                // TODO(estade): track current point so we can handle 'S'.
+                currentCommand.args.push('???');
+                currentCommand.args.push('???');
+              }
             }
 
             currentCommand.args.push(point);
@@ -86,7 +92,7 @@ function ConvertInput() {
           for (i in command.args) {
             var point = command.args[i];
             output += point;
-            if (((point * 10) % 10) != 0)
+            if (typeof point == 'number' && ((point * 10) % 10 != 0))
               output += 'f';
             output += ', ';
           }
