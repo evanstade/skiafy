@@ -23,6 +23,24 @@ function ToCommand(letter) {
   return '~UNKNOWN~';
 }
 
+function LengthForCommand(letter) {
+  switch (letter) {
+    case 'C':
+    case 'c':
+    case 'S':
+    case 's':
+      return 6;
+    case 'L':
+    case 'l':
+    case 'H':
+    case 'h':
+    case 'V':
+    case 'v':
+      return 2;
+  };
+  return 999;
+}
+
 function ConvertInput() {
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
@@ -39,7 +57,7 @@ function ConvertInput() {
           break;
 
         var commands = [];
-        var path = svgElement.getAttribute('d');
+        var path = svgElement.getAttribute('d').replace(/,/g, ' ');
         while (path) {
           var point = parseFloat(path);
           if (isNaN(point)) {
@@ -48,7 +66,7 @@ function ConvertInput() {
             commands.push({ 'command': letter, 'args': [] });
           } else {
             var currentCommand = commands[commands.length - 1];
-            if (currentCommand.args.length == 6) {
+            if (currentCommand.args.length == LengthForCommand(currentCommand.command)) {
               commands.push({ 'command': currentCommand.command, 'args': [] });
               currentCommand = commands[commands.length - 1];
             }
