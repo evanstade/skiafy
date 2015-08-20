@@ -18,7 +18,9 @@ function ToCommand(letter) {
     case 'c':
     case 's':
       return 'R_CUBIC_TO';
-    case 'z': return 'CLOSE';
+    case 'Z':
+    case 'z':
+      return 'CLOSE';
   }
   return '~UNKNOWN~';
 }
