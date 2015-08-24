@@ -86,6 +86,8 @@ function ConvertInput() {
               }
             }
 
+            // Drop thousandths.
+            point = Math.floor(point * 100 + 0.5) / 100;
             currentCommand.args.push(point);
 
             var dotsSeen = 0;
