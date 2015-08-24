@@ -43,7 +43,18 @@ function LengthForCommand(letter) {
   return 999;
 }
 
+function RoundToHundredths(x) {
+  return Math.floor(x * 100 + 0.5) / 100;
+}
+
 function ConvertInput() {
+  var transformX = parseFloat($('transform-x').value);
+  var transformY = parseFloat($('transform-y').value);
+  if (isNaN(transformX))
+    transformX = 0;
+  if (isNaN(transformY))
+    transformY = 0;
+
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
   var output = '';
@@ -77,8 +88,8 @@ function ConvertInput() {
               if (currentCommand.command == 's') {
                 var lastCommand = commands[commands.length - 2];
                 var lgth = lastCommand.args.length;
-                currentCommand.args.push(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]);
-                currentCommand.args.push(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]);
+                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
+                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
               } else {
                 // TODO(estade): track current point so we can handle 'S'.
                 currentCommand.args.push('???');
@@ -86,8 +97,9 @@ function ConvertInput() {
               }
             }
 
-            // Drop thousandths.
-            point = Math.floor(point * 100 + 0.5) / 100;
+            if (currentCommand.command != currentCommand.command.toLowerCase())
+              point += currentCommand.args.length % 2 == 0 ? transformX : transformY;
+            point = RoundToHundredths(point);
             currentCommand.args.push(point);
 
             var dotsSeen = 0;
