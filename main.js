@@ -70,7 +70,9 @@ function ConvertInput() {
           break;
 
         var commands = [];
-        var path = svgElement.getAttribute('d').replace(/,/g, ' ');
+        var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
+        if (path.slice(-1).toLowerCase() !== 'z')
+          path += 'z';
         while (path) {
           var point = parseFloat(path);
           if (isNaN(point)) {
