@@ -59,7 +59,7 @@ function ConvertInput() {
   $('svg-anchor').innerHTML = input;
   var output = '';
   var svgNode = $('svg-anchor').querySelector('svg');
-  for (idx in svgNode.children) {
+  for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
     switch (svgElement.tagName) {
       // PATH ------------------------------------------------------------------
