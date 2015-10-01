@@ -55,10 +55,17 @@ function ConvertInput() {
   if (isNaN(transformY))
     transformY = 0;
 
+  var scaleX = $('flip-x').checked ? -1 : 1;
+  var scaleY = $('flip-y').checked ? -1 : 1;
+
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
   var output = '';
   var svgNode = $('svg-anchor').querySelector('svg');
+  var canvasSize = svgNode.viewBox.baseVal.width;
+  if (canvasSize != 48)
+    output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
+
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
     switch (svgElement.tagName) {
@@ -99,8 +106,11 @@ function ConvertInput() {
               }
             }
 
-            if (currentCommand.command != currentCommand.command.toLowerCase())
-              point += currentCommand.args.length % 2 == 0 ? transformX : transformY;
+            var xAxis = currentCommand.args.length % 2 == 0;
+            point *= xAxis ? scaleX : scaleY;
+            if (currentCommand.command != currentCommand.command.toLowerCase()) {
+              point += xAxis ? transformX : transformY;
+            }
             point = RoundToHundredths(point);
             currentCommand.args.push(point);
 
