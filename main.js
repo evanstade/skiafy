@@ -169,7 +169,8 @@ function ConvertInput() {
         var width = parseFloat(svgElement.getAttribute('width'));
         var height = parseFloat(svgElement.getAttribute('height'));
 
-        output += 'RECT, ' + x + ', ' + y + ', ' + width + ', ' + height + ', ';
+        output += 'ROUND_RECT, ' + x + ', ' + y + ', ' + width + ', ' + height +
+            ', ';
 
         var round = svgElement.getAttribute('rx');
         if (!round)
