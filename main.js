@@ -48,12 +48,12 @@ function RoundToHundredths(x) {
 }
 
 function ConvertInput() {
-  var transformX = parseFloat($('transform-x').value);
-  var transformY = parseFloat($('transform-y').value);
-  if (isNaN(transformX))
-    transformX = 0;
-  if (isNaN(transformY))
-    transformY = 0;
+  var translateX = parseFloat($('transform-x').value);
+  var translateY = parseFloat($('transform-y').value);
+  if (isNaN(translateX))
+    translateX = 0;
+  if (isNaN(translateY))
+    translateY = 0;
 
   var scaleX = $('flip-x').checked ? -1 : 1;
   var scaleY = $('flip-y').checked ? -1 : 1;
@@ -109,7 +109,7 @@ function ConvertInput() {
             var xAxis = currentCommand.args.length % 2 == 0;
             point *= xAxis ? scaleX : scaleY;
             if (currentCommand.command != currentCommand.command.toLowerCase()) {
-              point += xAxis ? transformX : transformY;
+              point += xAxis ? translateX : translateY;
             }
             point = RoundToHundredths(point);
             currentCommand.args.push(point);
@@ -148,17 +148,29 @@ function ConvertInput() {
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
-        output += 'CIRCLE, ' + svgElement.getAttribute('cx') + ', ' +
-            svgElement.getAttribute('cy') + ', ' +
-            svgElement.getAttribute('r') + ',\n';
+        var cx = parseFloat(svgElement.getAttribute('cx'));
+        cx *= scaleX;
+        cx += translateX;
+        var cy = parseFloat(svgElement.getAttribute('cy'));
+        cy *= scaleY;
+        cy += translateY;
+        var rad = parseFloat(svgElement.getAttribute('r'));
+        output += 'CIRCLE, ' + cx + ', ' + cy + ', ' + rad + ',\n';
         break;
 
       // RECT ------------------------------------------------------------------
       case 'rect':
-        output += 'RECT, ' + svgElement.getAttribute('x') + ', ' +
-            svgElement.getAttribute('y') + ', ' +
-            svgElement.getAttribute('width') + ', ' +
-            svgElement.getAttribute('height') + ', ';
+        var x = parseFloat(svgElement.getAttribute('x'));
+        x *= scaleX;
+        x += translateX;
+        var y = parseFloat(svgElement.getAttribute('y'));
+        y *= scaleY;
+        y += translateY;
+        var width = parseFloat(svgElement.getAttribute('width'));
+        var height = parseFloat(svgElement.getAttribute('height'));
+
+        output += 'RECT, ' + x + ', ' + y + ', ' + width + ', ' + height + ', ';
+
         var round = svgElement.getAttribute('rx');
         if (!round)
           round = '0';
