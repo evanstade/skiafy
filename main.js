@@ -151,6 +151,19 @@ function ConvertInput() {
         output += 'CIRCLE, ' + svgElement.getAttribute('cx') + ', ' +
             svgElement.getAttribute('cy') + ', ' +
             svgElement.getAttribute('r') + ',\n';
+        break;
+
+      // RECT ------------------------------------------------------------------
+      case 'rect':
+        output += 'RECT, ' + svgElement.getAttribute('x') + ', ' +
+            svgElement.getAttribute('y') + ', ' +
+            svgElement.getAttribute('width') + ', ' +
+            svgElement.getAttribute('height') + ', ';
+        var round = svgElement.getAttribute('rx');
+        if (!round)
+          round = '0';
+        output += round + ',\n';
+        break;
     }
   }
 
