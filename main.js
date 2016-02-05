@@ -160,10 +160,10 @@ function ConvertInput() {
 
       // RECT ------------------------------------------------------------------
       case 'rect':
-        var x = parseFloat(svgElement.getAttribute('x'));
+        var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
-        var y = parseFloat(svgElement.getAttribute('y'));
+        var y = parseFloat(svgElement.getAttribute('y')) || 0;
         y *= scaleY;
         y += translateY;
         var width = parseFloat(svgElement.getAttribute('width'));
