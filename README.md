@@ -1,4 +1,6 @@
 # skiafy
-A little SVG to Skia converter tool
 
-To see it in action, try https://rawgit.com/evanstade/skiafy/gh-pages/index.html
+This program converts SVG images to Skia format.
+
+Try [a live deployment of this
+tool](https://rawgit.com/evanstade/skiafy/gh-pages/index.html).
