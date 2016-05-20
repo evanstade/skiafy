@@ -71,9 +71,9 @@ function ConvertInput() {
     switch (svgElement.tagName) {
       // PATH ------------------------------------------------------------------
       case 'path':
-        // If fill is none, this is probably one of those worthless paths
-        // of the form <path fill="none" d="M0 0h24v24H0z"/>
-        if (svgElement.getAttribute('fill') == 'none')
+        // Skip paths with no fill.
+        var fill = svgElement.getAttribute('fill')
+        if (fill == 'none' || fill == null || fill == '')
           break;
 
         var commands = [];
