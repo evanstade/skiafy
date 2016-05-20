@@ -47,25 +47,32 @@ function RoundToHundredths(x) {
   return Math.floor(x * 100 + 0.5) / 100;
 }
 
-function ConvertInput() {
-  var translateX = parseFloat($('transform-x').value);
-  var translateY = parseFloat($('transform-y').value);
-  if (isNaN(translateX))
-    translateX = 0;
-  if (isNaN(translateY))
-    translateY = 0;
+function GetFirstUsableParent(node, usableNodes) {
+  if (node.children.length == 0) {
+    return null;
+  }
 
-  var scaleX = $('flip-x').checked ? -1 : 1;
-  var scaleY = $('flip-y').checked ? -1 : 1;
+  var child = node.children[0];
+  if (usableNodes.hasOwnProperty(child.tagName)) {
+    return node;
+  }
 
-  var input = $('user-input').value;
-  $('svg-anchor').innerHTML = input;
+  for (var i = 0; i < node.children.length; ++i) {
+    var child = node.children[i];
+    var p = GetFirstUsableParent(child, usableNodes);
+    if (null != p) {
+      return p
+    }
+  }
+
+  return null;
+}
+
+function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
+  var usableElements = { 'path': true, 'circle': true, 'rect': true };
+  svgNode = GetFirstUsableParent(svgNode, usableElements);
+
   var output = '';
-  var svgNode = $('svg-anchor').querySelector('svg');
-  var canvasSize = svgNode.viewBox.baseVal.width;
-  if (canvasSize != 48)
-    output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
-
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
     switch (svgElement.tagName) {
@@ -179,9 +186,30 @@ function ConvertInput() {
         break;
     }
   }
+  return output;
+}
 
+function ConvertInput() {
+  var translateX = parseFloat($('transform-x').value);
+  var translateY = parseFloat($('transform-y').value);
+  if (isNaN(translateX))
+    translateX = 0;
+  if (isNaN(translateY))
+    translateY = 0;
+
+  var scaleX = $('flip-x').checked ? -1 : 1;
+  var scaleY = $('flip-y').checked ? -1 : 1;
+
+  var input = $('user-input').value;
+  $('svg-anchor').innerHTML = input;
+  var output = '';
+  var svgNode = $('svg-anchor').querySelector('svg');
+  var canvasSize = svgNode.viewBox.baseVal.width;
+  if (canvasSize != 48)
+    output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
+
+  output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY);
   output += 'END';
-
   $('output-span').textContent = output;
 }
 
