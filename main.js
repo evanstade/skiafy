@@ -12,6 +12,8 @@ function ToCommand(letter) {
     case 'h': return 'R_H_LINE_TO';
     case 'V': return 'V_LINE_TO';
     case 'v': return 'R_V_LINE_TO';
+    case 'A': return 'ARC_TO';
+    case 'a': return 'R_ARC_TO';
     case 'C':
     case 'S':
       return 'CUBIC_TO';
@@ -39,6 +41,9 @@ function LengthForCommand(letter) {
     case 'V':
     case 'v':
       return 2;
+    case 'A':
+    case 'a':
+      return 7;
   };
   return 999;
 }
