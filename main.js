@@ -53,21 +53,18 @@ function RoundToHundredths(x) {
 }
 
 function GetFirstUsableParent(node, usableNodes) {
-  if (node.children.length == 0) {
+  if (node.children.length == 0)
     return null;
-  }
 
   var child = node.children[0];
-  if (usableNodes.hasOwnProperty(child.tagName)) {
+  if (usableNodes.hasOwnProperty(child.tagName))
     return node;
-  }
 
   for (var i = 0; i < node.children.length; ++i) {
     var child = node.children[i];
     var p = GetFirstUsableParent(child, usableNodes);
-    if (null != p) {
-      return p
-    }
+    if (p)
+      return p;
   }
 
   return null;
