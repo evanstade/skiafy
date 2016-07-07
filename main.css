@@ -2,6 +2,11 @@ html {
   font-family: 'Open Sans Light',Helvetica,Arial,sans-serif;
 }
 
+.caveat {
+  font-size: 140%;
+  font-weight: bold;
+}
+
 #top-stuff > div {
   display: inline-block;
   vertical-align: top;
@@ -19,7 +24,7 @@ html {
 }
 
 #svg-anchor::before {
-  content: 'Rendered:';
+  content: 'Rendered SVG:';
   vertical-align: top;
   -webkit-margin-start: 2em;
 }
