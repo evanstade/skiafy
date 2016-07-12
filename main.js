@@ -105,9 +105,20 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
             if (currentCommand.command.toLowerCase() == 's' && currentCommand.args.length == 0) {
               if (currentCommand.command == 's') {
                 var lastCommand = commands[commands.length - 2];
-                var lgth = lastCommand.args.length;
-                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
-                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
+                if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
+                  // The first control point is assumed to be the reflection of
+                  // the second control point on the previous command relative
+                  // to the current point.
+                  var lgth = lastCommand.args.length;
+                  currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
+                  currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
+                } else {
+                  // "If there is no previous command or if the previous command
+                  // was not an C, c, S or s, assume the first control point is
+                  // coincident with the current point."
+                  currentCommand.args.push(0);
+                  currentCommand.args.push(0);
+                }
               } else {
                 // TODO(estade): track current point so we can handle 'S'.
                 currentCommand.args.push('???');
