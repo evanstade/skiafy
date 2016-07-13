@@ -52,28 +52,7 @@ function RoundToHundredths(x) {
   return Math.floor(x * 100 + 0.5) / 100;
 }
 
-function GetFirstUsableParent(node, usableNodes) {
-  if (node.children.length == 0)
-    return null;
-
-  var child = node.children[0];
-  if (usableNodes.hasOwnProperty(child.tagName))
-    return node;
-
-  for (var i = 0; i < node.children.length; ++i) {
-    var child = node.children[i];
-    var p = GetFirstUsableParent(child, usableNodes);
-    if (p)
-      return p;
-  }
-
-  return null;
-}
-
 function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
-  var usableElements = { 'path': true, 'circle': true, 'rect': true };
-  svgNode = GetFirstUsableParent(svgNode, usableElements);
-
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
