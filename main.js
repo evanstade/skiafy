@@ -105,7 +105,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
               }
             }
 
-            var xAxis = currentCommand.args.length % 2 == 0;
+            var xAxis = currentCommand.command.toLowerCase() != 'v' && (currentCommand.args.length % 2 == 0);
             point *= xAxis ? scaleX : scaleY;
             if (currentCommand.command != currentCommand.command.toLowerCase()) {
               point += xAxis ? translateX : translateY;
