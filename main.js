@@ -57,6 +57,15 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
     switch (svgElement.tagName) {
+      // g ---------------------------------------------------------------------
+      case 'g':
+        if (svgElement.getAttribute('transform')) {
+          output += "<g> with a transform not handled\n";
+          break;
+        }
+
+        return HandleNode(svgElement, scaleX, scaleY, translateX, translateY);
+
       // PATH ------------------------------------------------------------------
       case 'path':
         // If fill is none, this is probably one of those worthless paths
