@@ -197,6 +197,8 @@ function ConvertInput() {
   var output = '';
   var svgNode = $('svg-anchor').querySelector('svg');
   var canvasSize = svgNode.viewBox.baseVal.width;
+  if (canvasSize == 0)
+    canvasSize = svgNode.width.baseVal.value;
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
