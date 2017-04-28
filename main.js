@@ -213,7 +213,7 @@ function ConvertInput() {
 
   output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY);
   output += 'END';
-  $('output-span').textContent = output;
+  $('output-span').textContent = output.replace("CUBIC_TO, ???, ???,", "CUBIC_TO_SHORTHAND, ");
 }
 
 function init() {
