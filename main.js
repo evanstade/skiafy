@@ -15,8 +15,9 @@ function ToCommand(letter) {
     case 'A': return 'ARC_TO';
     case 'a': return 'R_ARC_TO';
     case 'C':
-    case 'S':
       return 'CUBIC_TO';
+    case 'S':
+      return 'CUBIC_TO_S';
     case 'c':
     case 's':
       return 'R_CUBIC_TO';
@@ -31,9 +32,10 @@ function LengthForCommand(letter) {
   switch (letter) {
     case 'C':
     case 'c':
-    case 'S':
     case 's':
       return 6;
+    case 'S':
+      return 4;
     case 'L':
     case 'l':
     case 'H':
@@ -90,27 +92,21 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
               currentCommand = commands[commands.length - 1];
             }
             // Insert implicit points.
-            if (currentCommand.command.toLowerCase() == 's' && currentCommand.args.length == 0) {
-              if (currentCommand.command == 's') {
-                var lastCommand = commands[commands.length - 2];
-                if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
-                  // The first control point is assumed to be the reflection of
-                  // the second control point on the previous command relative
-                  // to the current point.
-                  var lgth = lastCommand.args.length;
-                  currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
-                  currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
-                } else {
-                  // "If there is no previous command or if the previous command
-                  // was not an C, c, S or s, assume the first control point is
-                  // coincident with the current point."
-                  currentCommand.args.push(0);
-                  currentCommand.args.push(0);
-                }
+            if (currentCommand.command == 's' && currentCommand.args.length == 0) {
+              var lastCommand = commands[commands.length - 2];
+              if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
+                // The first control point is assumed to be the reflection of
+                // the second control point on the previous command relative
+                // to the current point.
+                var lgth = lastCommand.args.length;
+                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
+                currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
               } else {
-                // TODO(estade): track current point so we can handle 'S'.
-                currentCommand.args.push('???');
-                currentCommand.args.push('???');
+                // "If there is no previous command or if the previous command
+                // was not an C, c, S or s, assume the first control point is
+                // coincident with the current point."
+                currentCommand.args.push(0);
+                currentCommand.args.push(0);
               }
             }
 
@@ -213,7 +209,7 @@ function ConvertInput() {
 
   output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY);
   output += 'END';
-  $('output-span').textContent = output.replace("CUBIC_TO, ???, ???,", "CUBIC_TO_SHORTHAND, ");
+  $('output-span').textContent = output;
 }
 
 function init() {
