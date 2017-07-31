@@ -14,9 +14,8 @@ function ToCommand(letter) {
     case 'v': return 'R_V_LINE_TO';
     case 'A': return 'ARC_TO';
     case 'a': return 'R_ARC_TO';
-    case 'C':
-    case 'S':
-      return 'CUBIC_TO';
+    case 'C': return 'CUBIC_TO';
+    case 'S': return 'CUBIC_TO_SHORTHAND';
     case 'c':
     case 's':
       return 'R_CUBIC_TO';
@@ -31,9 +30,10 @@ function LengthForCommand(letter) {
   switch (letter) {
     case 'C':
     case 'c':
-    case 'S':
     case 's':
       return 6;
+    case 'S':
+      return 4;
     case 'L':
     case 'l':
     case 'H':
@@ -107,10 +107,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
                   currentCommand.args.push(0);
                   currentCommand.args.push(0);
                 }
-              } else {
-                // TODO(estade): track current point so we can handle 'S'.
-                currentCommand.args.push('???');
-                currentCommand.args.push('???');
               }
             }
 
