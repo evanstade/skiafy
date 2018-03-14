@@ -208,8 +208,8 @@ function ConvertInput() {
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
   output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY);
-  output += 'END';
-  $('output-span').textContent = output;
+  // Truncate final comma and newline.
+  $('output-span').textContent = output.slice(0, -2);
 }
 
 function init() {
