@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Help for Skiafy</title>
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <script src="main.js"></script>
+</head>
+
+<h1>Skiafy Help</h1>
+
+<p class="caveat">Caveat emptor! This program makes lots of assumptions. Its
+output is just a starting point; you may have to manipulate it further.</p>
+
+<p>Strongly consider pre-processing the SVG source with <a
+href="https://jakearchibald.github.io/svgomg/">Jake Archibald’s SVGOMG tool</a>
+(a web interface to <a href="https://github.com/svg/svgo/">the SVGO SVG
+optimizer</a>).</p>
+
+<h3>Common SVG edits</h3>
+
+<p>Remove all &lt;defs&gt; tags, and move their contents to a &lt;g&gt;
+section, e.g.</p>
+<ul>
+  <li>&lt;defs&gt; &lt;path A /&gt; &lt;/defs&gt; &lt;g&gt;
+  &lt;path B /&gt; &lt;/g&gt; becomes &lt;g&gt; &lt;path A /&gt;
+  &lt;path B /&gt; &lt;/g&gt;</li>
+</ul>
+
+<p>Remove all &lt;use&gt; tags, and move the attributes to the element with an
+"id" matching the &lt;use&gt; "xlink:href". Remove the "id" attribute, e.g.</p>
+<ul>
+  <li>&lt;path id="a"/&gt; &lt;use fill="#000" xlink:href="#a"/&gt; becomes
+  &lt;path fill="#000"/&gt;</li>
+</ul>
+
+<p>Sometimes an additional square border may need to be removed</p>
+<ul>
+  <li>&lt;path d="M0 0h20v20H0z"/&gt; will draw a border around the icon, remove
+  if it isn't needed</li>
+</ul>
+
+</html>
