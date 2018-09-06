@@ -214,6 +214,9 @@ function ConvertInput() {
 
 function init() {
   $('go-button').addEventListener('click', ConvertInput);
+
+  if (navigator.userAgent.indexOf("WebKit") >= 0)
+    $('use-webkit').hidden = true;
 }
 
 window.onload = init;
