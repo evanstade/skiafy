@@ -110,10 +110,19 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
               }
             }
 
+            // Whether to apply flipping and translating transforms to the
+            // argument. Only the last two arguments (out of 7) in an arc
+            // command are coordinates.
+            var transformArg = true;
+            if (currentCommand.command.toLowerCase() == 'a') {
+              if (currentCommand.args.length < 5)
+                transformArg = false;
+            }
             var xAxis = currentCommand.command.toLowerCase() != 'v' && (currentCommand.args.length % 2 == 0);
-            point *= xAxis ? scaleX : scaleY;
-            if (currentCommand.command != currentCommand.command.toLowerCase()) {
-              point += xAxis ? translateX : translateY;
+            if (transformArg) {
+              point *= xAxis ? scaleX : scaleY;
+              if (currentCommand.command != currentCommand.command.toLowerCase())
+                point += xAxis ? translateX : translateY;
             }
             point = RoundToHundredths(point);
             currentCommand.args.push(point);
