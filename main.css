@@ -2,6 +2,18 @@ html {
   font-family: 'Open Sans Light',Helvetica,Arial,sans-serif;
 }
 
+#use-webkit {
+  background: repeating-linear-gradient(
+    45deg,
+    #f60006,
+    #f60006 10px,
+    #ff373b 10px,
+    #ff373b 20px
+  );
+  color: white;
+  padding: 1em;
+}
+
 .caveat {
   font-size: 140%;
   font-weight: bold;
