@@ -49,3 +49,16 @@ html {
 pre {
   -webkit-margin-start: 2em;
 }
+
+input+span {
+  display: none;
+}
+
+input:checked+span {
+  display: inherit;
+}
+
+.limitation {
+  color: grey;
+  font-style: italic;
+}
