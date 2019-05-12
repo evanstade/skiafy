@@ -50,12 +50,8 @@ pre {
   -webkit-margin-start: 2em;
 }
 
-input+span {
+input:not(:checked) ~ .limitation {
   display: none;
-}
-
-input:checked+span {
-  display: inherit;
 }
 
 .limitation {

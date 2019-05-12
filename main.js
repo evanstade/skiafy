@@ -54,7 +54,7 @@ function RoundToHundredths(x) {
 
 // |fillString| is expected to be "#RRGGBB" or "#RGB"].
 function PathColorFromFill(fillString) {
-  if(fillString.length === 4) {
+  if (fillString.length === 4) {
     // Color in form of #RGB so let's turn that to #RRGGBB.
     fillString = `#${fillString[1]}${fillString[1]}${fillString[2]}${fillString[2]}${fillString[3]}${fillString[3]}`.toUpperCase();
   }
@@ -72,14 +72,15 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
     var svgElement = svgNode.children[idx];
 
     if (preserveFill) {
-      output += "NEW_PATH,\n";
-
       const fill = svgElement.getAttribute('fill');
-      if(fill && fill !== 'none') {
+      if (fill && fill !== 'none') {
         // Colors in form #FFF or #FFFFFF.
         const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
         const fillMatch = fill.match(hexColorRegExp);
         if(fillMatch && fillMatch.length === 1) {
+          if (idx !== 0)
+            output += "NEW_PATH,\n";
+
           output += PathColorFromFill(fillMatch[0]);
         }
       }
@@ -93,7 +94,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
           break;
         }
 
-        return HandleNode(svgElement, scaleX, scaleY, translateX, translateY);
+        return HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
 
       // PATH ------------------------------------------------------------------
       case 'path':
