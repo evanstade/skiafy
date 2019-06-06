@@ -52,7 +52,7 @@ function RoundToHundredths(x) {
   return Math.floor(x * 100 + 0.5) / 100;
 }
 
-// |fillString| is expected to be "#RRGGBB" or "#RGB"].
+// |fillString| is expected to be "#RRGGBB" or "#RGB".
 function PathColorFromFill(fillString) {
   if (fillString.length === 4) {
     // Color in form of #RGB so let's turn that to #RRGGBB.
@@ -70,20 +70,22 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     var svgElement = svgNode.children[idx];
+    const fill = svgElement.getAttribute('fill');
 
-    if (preserveFill) {
-      const fill = svgElement.getAttribute('fill');
-      if (fill && fill !== 'none') {
-        // Colors in form #FFF or #FFFFFF.
-        const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
-        const fillMatch = fill.match(hexColorRegExp);
-        if(fillMatch && fillMatch.length === 1) {
-          if (idx !== 0)
-            output += "NEW_PATH,\n";
+    if (preserveFill && svgElement.tagName !== 'g' && fill && fill !== 'none') {
+      // Colors in form #FFF or #FFFFFF.
+      const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
+      const fillMatch = fill.match(hexColorRegExp);
+      if (fillMatch && fillMatch.length === 1) {
+        if (idx !== 0)
+          output += "NEW_PATH,\n";
 
-          output += PathColorFromFill(fillMatch[0]);
-        }
+        output += PathColorFromFill(fillMatch[0]);
       }
+    } else if (fill === 'none') {
+      // If fill is none, this is probably one of those worthless paths
+      // of the form <path fill="none" d="M0 0h24v24H0z"/>
+      continue;
     }
 
     switch (svgElement.tagName) {
@@ -98,11 +100,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // PATH ------------------------------------------------------------------
       case 'path':
-        // If fill is none, this is probably one of those worthless paths
-        // of the form <path fill="none" d="M0 0h24v24H0z"/>
-        if (svgElement.getAttribute('fill') == 'none')
-          break;
-
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
         if (path.slice(-1).toLowerCase() !== 'z')
