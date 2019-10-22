@@ -82,9 +82,11 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
       // PATH ------------------------------------------------------------------
       case 'path':
-        // If fill is none, this is probably one of those worthless paths
+        var isStrokePath = svgElement.getAttribute('stroke') &&
+                           svgElement.getAttribute('stroke') != 'none';
+        // If fill is none and doesn't have stroke, this is probably one of those worthless paths
         // of the form <path fill="none" d="M0 0h24v24H0z"/>
-        if (svgElement.getAttribute('fill') == 'none')
+        if (svgElement.getAttribute('fill') == 'none' && !isStrokePath)
           break;
 
         var commands = [];
@@ -157,6 +159,14 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
           }
 
           path = path.trim();
+        }
+
+        if (isStrokePath) {
+          var strokeWidth =  svgElement.getAttribute('stroke-width');
+          if (!strokeWidth || isNan(strokeWidth))
+            strokeWidth = 1;
+
+          output += 'STROKE, ' + strokeWidth + ',\n';
         }
 
         for (command_idx in commands) {
