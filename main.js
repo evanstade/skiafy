@@ -40,7 +40,7 @@ function ToCommand(letter) {
   return '~UNKNOWN~';
 }
 
-function LengthForCommand(letter) {
+function LengthForSvgDirective(letter) {
   switch (letter) {
     case 'C':
     case 'c':
@@ -101,13 +101,26 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
             commands.push({ 'command': letter, 'args': [] });
           } else {
             var currentCommand = commands[commands.length - 1];
-            if (currentCommand.args.length == LengthForCommand(currentCommand.command)) {
-              commands.push({ 'command': currentCommand.command, 'args': [] });
+            var svgDirective = currentCommand.command;
+            if (currentCommand.args.length == LengthForSvgDirective(svgDirective)) {
+              commands.push({ 'command': svgDirective, 'args': [] });
               currentCommand = commands[commands.length - 1];
+              svgDirective = currentCommand.command;
             }
+
+            var pathNeedsPruning = true;
+            if (svgDirective.toLowerCase() == 'a' &&
+                currentCommand.args.length >= 3 &&
+                currentCommand.args.length <= 4) {
+              point = parseInt(path[0]);
+              console.assert(point == 0 || point == 1, "Unexpected arc argument " << point);
+              path = path.substr(1);
+              pathNeedsPruning = false;
+            }
+
             // Insert implicit points.
-            if (currentCommand.command.toLowerCase() == 's' && currentCommand.args.length == 0) {
-              if (currentCommand.command == 's') {
+            if (svgDirective.toLowerCase() == 's' && currentCommand.args.length == 0) {
+              if (svgDirective == 's') {
                 var lastCommand = commands[commands.length - 2];
                 if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
                   // The first control point is assumed to be the reflection of
@@ -130,30 +143,36 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
             // argument. Only the last two arguments (out of 7) in an arc
             // command are coordinates.
             var transformArg = true;
-            if (currentCommand.command.toLowerCase() == 'a') {
+            // xAxis is true when the current coordinate refers to the xAxis.
+            var xAxis = currentCommand.args.length % 2 == 0;
+            if (svgDirective.toLowerCase() == 'a') {
               if (currentCommand.args.length < 5)
                 transformArg = false;
+              xAxis = currentCommand.args.length % 2 == 1;
+            } else if (svgDirective.toLowerCase() == 'v') {
+              xAxis = false;
             }
-            var xAxis = currentCommand.command.toLowerCase() != 'v' && (currentCommand.args.length % 2 == 0);
             if (transformArg) {
               point *= xAxis ? scaleX : scaleY;
-              if (currentCommand.command != currentCommand.command.toLowerCase())
+              if (svgDirective != svgDirective.toLowerCase())
                 point += xAxis ? translateX : translateY;
             }
             point = RoundToHundredths(point);
             currentCommand.args.push(point);
 
-            var dotsSeen = 0;
-            for (var i = 0; i < path.length; ++i) {
-              if (i == 0 && path[i] == '-')
-                continue;
-              if (!isNaN(parseInt(path[i])))
-                continue;
-              if (path[i] == '.' && ++dotsSeen == 1)
-                continue;
+            if (pathNeedsPruning) {
+              var dotsSeen = 0;
+              for (var i = 0; i < path.length; ++i) {
+                if (i == 0 && path[i] == '-')
+                  continue;
+                if (!isNaN(parseInt(path[i])))
+                  continue;
+                if (path[i] == '.' && ++dotsSeen == 1)
+                  continue;
 
-              path = path.substr(i);
-              break;
+                path = path.substr(i);
+                break;
+              }
             }
 
           }
