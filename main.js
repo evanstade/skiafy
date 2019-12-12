@@ -53,7 +53,7 @@ function RoundToHundredths(x) {
 }
 
 // |fillString| is expected to be "#RRGGBB" or "#RGB".
-function PathColorFromFill(fillString) {
+function ParseFillStringToPathColor(fillString) {
   if (fillString.length === 4) {
     // Color in form of #RGB so let's turn that to #RRGGBB.
     fillString = `#${fillString[1]}${fillString[1]}${fillString[2]}${fillString[2]}${fillString[3]}${fillString[3]}`.toUpperCase();
@@ -62,32 +62,36 @@ function PathColorFromFill(fillString) {
   const r = fillString.substr(1,2);
   const g = fillString.substr(3,2);
   const b = fillString.substr(5,2);
-  
+
   return `PATH_COLOR_ARGB, 0xFF, 0x${r}, 0x${g}, 0x${b},\n`;
+}
+
+// If |enabled|, this method will parse the fill for |element| and if the fill
+// is valid and usable, will return the corresponding path color command. If
+// the fill is unusable, will return empty string.
+function GetPathColorCommandFromFill(enabled, element) {
+  const fill = element.getAttribute('fill');
+  // If fill is none, this is probably one of those worthless elements
+  // of the form <path fill="none" d="M0 0h24v24H0z"/>
+  if (enabled && fill && fill !== 'none') {
+    // Colors in form #FFF or #FFFFFF.
+    const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
+    const fillMatch = fill.match(hexColorRegExp);
+    if (fillMatch && fillMatch.length === 1) {
+      return ParseFillStringToPathColor(fillMatch[0]);
+    }
+  }
+
+  return '';
 }
 
 function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
+    if (idx !== 0)
+        output += "NEW_PATH,\n";
+
     var svgElement = svgNode.children[idx];
-    const fill = svgElement.getAttribute('fill');
-
-    if (preserveFill && svgElement.tagName !== 'g' && fill && fill !== 'none') {
-      // Colors in form #FFF or #FFFFFF.
-      const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
-      const fillMatch = fill.match(hexColorRegExp);
-      if (fillMatch && fillMatch.length === 1) {
-        if (idx !== 0)
-          output += "NEW_PATH,\n";
-
-        output += PathColorFromFill(fillMatch[0]);
-      }
-    } else if (fill === 'none') {
-      // If fill is none, this is probably one of those worthless paths
-      // of the form <path fill="none" d="M0 0h24v24H0z"/>
-      continue;
-    }
-
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
@@ -100,6 +104,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // PATH ------------------------------------------------------------------
       case 'path':
+        output += GetPathColorCommandFromFill(preserveFill, svgElement);
+
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
         if (path.slice(-1).toLowerCase() !== 'z')
@@ -188,6 +194,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
+        output += GetPathColorCommandFromFill(preserveFill, svgElement);
+
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
         cx += translateX;
@@ -200,6 +208,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // RECT ------------------------------------------------------------------
       case 'rect':
+        output += GetPathColorCommandFromFill(preserveFill, svgElement);
+
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
