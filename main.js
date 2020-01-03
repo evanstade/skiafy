@@ -80,14 +80,14 @@ function ParseFillStringToPathColor(fillString) {
   return `PATH_COLOR_ARGB, 0xFF, 0x${r}, 0x${g}, 0x${b},\n`;
 }
 
-// If |enabled|, this method will parse the fill for |element| and if the fill
+// This method will parse the fill for |element| and if the fill
 // is valid and usable, will return the corresponding path color command. If
 // the fill is unusable, will return empty string.
-function GetPathColorCommandFromFill(enabled, element) {
+function GetPathColorCommandFromFill(element) {
+  const supportedSVGElements = ['path', 'circle', 'rect'];
+  const isElementSupported = supportedSVGElements.includes(element.tagName);
   const fill = element.getAttribute('fill');
-  // If fill is none, this is probably one of those worthless elements
-  // of the form <path fill="none" d="M0 0h24v24H0z"/>
-  if (enabled && fill && fill !== 'none') {
+  if (isElementSupported && fill && fill !== 'none') {
     // Colors in form #FFF or #FFFFFF.
     const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
     const fillMatch = fill.match(hexColorRegExp);
@@ -106,6 +106,10 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
         output += "NEW_PATH,\n";
 
     var svgElement = svgNode.children[idx];
+
+    if (preserveFill)
+      output += GetPathColorCommandFromFill(svgElement);
+
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
@@ -118,7 +122,10 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // PATH ------------------------------------------------------------------
       case 'path':
-        output += GetPathColorCommandFromFill(preserveFill, svgElement);
+        // If fill is none, this is probably one of those worthless elements
+        // of the form <path fill="none" d="M0 0h24v24H0z"/>, so we skip.
+        if (svgElement.getAttribute('fill') == 'none')
+          break;
 
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
@@ -210,7 +217,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
           path = path.trim();
         }
-        
+
         var isStrokePath = svgElement.getAttribute('stroke') &&
                            svgElement.getAttribute('stroke') != 'none';
         if (isStrokePath) {
@@ -237,8 +244,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
-        output += GetPathColorCommandFromFill(preserveFill, svgElement);
-
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
         cx += translateX;
@@ -251,8 +256,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // RECT ------------------------------------------------------------------
       case 'rect':
-        output += GetPathColorCommandFromFill(preserveFill, svgElement);
-
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
