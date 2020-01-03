@@ -91,9 +91,8 @@ function GetPathColorCommandFromFill(element) {
     // Colors in form #FFF or #FFFFFF.
     const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
     const fillMatch = fill.match(hexColorRegExp);
-    if (fillMatch && fillMatch.length === 1) {
+    if (fillMatch && fillMatch.length === 1)
       return ParseFillStringToPathColor(fillMatch[0]);
-    }
   }
 
   return '';
