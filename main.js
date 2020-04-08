@@ -33,6 +33,11 @@ function ToCommand(letter) {
     case 'c':
     case 's':
       return 'R_CUBIC_TO';
+    case 'Q': return 'QUADRATIC_TO';
+    case 'T': return 'QUADRATIC_TO_SHORTHAND';
+    case 'q':
+    case 't':
+      return 'R_QUADRATIC_TO';
     case 'Z':
     case 'z':
       return 'CLOSE';
@@ -47,7 +52,11 @@ function LengthForSvgDirective(letter) {
     case 's':
       return 6;
     case 'S':
+    case 'Q':
+    case 'q':
+    case 't':
       return 4;
+    case 'T':
     case 'L':
     case 'l':
     case 'H':
@@ -118,21 +127,27 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
               pathNeedsPruning = false;
             }
 
-            // Insert implicit points.
-            if (svgDirective.toLowerCase() == 's' && currentCommand.args.length == 0) {
-              if (svgDirective == 's') {
+            // Insert implicit points for cubic and quadratic curves.
+            var isQuadraticOrCubic = svgDirective.toLowerCase() == 's' || svgDirective.toLowerCase() == 't';
+            if (isQuadraticOrCubic && currentCommand.args.length == 0) {
+              if (svgDirective == 's' || svgDirective == 't') {
                 var lastCommand = commands[commands.length - 2];
-                if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
+                // Make sure relative 's' directives can only match with
+                // previous cubic commands, and that relative 't' directives can
+                // only match with previous quadratic commands.
+                if ((svgDirective == 's' && ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) ||
+                    (svgDirective == 't' && ToCommand(lastCommand.command).search('QUADRATIC_TO') >= 0)) {
                   // The first control point is assumed to be the reflection of
-                  // the second control point on the previous command relative
+                  // the last control point on the previous command relative
                   // to the current point.
                   var lgth = lastCommand.args.length;
                   currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
                   currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
                 } else {
-                  // "If there is no previous command or if the previous command
-                  // was not an C, c, S or s, assume the first control point is
-                  // coincident with the current point."
+                  // If there is no previous command or if the previous command
+                  // was not an C, c, S or s for cubics, or Q, q, T, t for
+                  // quadratics, assume the first control point is coincident with
+                  // the current point.
                   currentCommand.args.push(0);
                   currentCommand.args.push(0);
                 }
@@ -233,6 +248,19 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
           round = '0';
         output += round + ',\n';
         break;
+
+      // OVAL ----------------------------------------------------------------
+      case 'ellipse':
+          var cx = parseFloat(svgElement.attr('cx')) || 0;
+          cx *= scaleX;
+          cx += translateX;
+          var cy = parseFloat(svgElement.attr('cy')) || 0;
+          cy *= scaleY;
+          cy += translateY;
+          var rx = parseFloat(svgElement.attr('rx')) || 0;
+          var ry = parseFloat(svgElement.attr('ry')) || 0;
+          output += 'OVAL, ' + cx + ', ' + cy + ', ' + rx + ', ' + ry + ',\n';
+          break;
     }
   }
   return output;
