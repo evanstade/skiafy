@@ -197,7 +197,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
         if (isStrokePath) {
           var strokeWidth =  svgElement.getAttribute('stroke-width');
-          if (!strokeWidth || isNan(strokeWidth))
+          if (!strokeWidth || isNaN(strokeWidth))
             strokeWidth = 1;
 
           output += 'STROKE, ' + strokeWidth + ',\n';
