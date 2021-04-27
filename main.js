@@ -251,14 +251,14 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
       // OVAL ----------------------------------------------------------------
       case 'ellipse':
-          var cx = parseFloat(svgElement.attr('cx')) || 0;
+          var cx = parseFloat(svgElement.getAttribute('cx')) || 0;
           cx *= scaleX;
           cx += translateX;
-          var cy = parseFloat(svgElement.attr('cy')) || 0;
+          var cy = parseFloat(svgElement.getAttribute('cy')) || 0;
           cy *= scaleY;
           cy += translateY;
-          var rx = parseFloat(svgElement.attr('rx')) || 0;
-          var ry = parseFloat(svgElement.attr('ry')) || 0;
+          var rx = parseFloat(svgElement.getAttribute('rx')) || 0;
+          var ry = parseFloat(svgElement.getAttribute('ry')) || 0;
           output += 'OVAL, ' + cx + ', ' + cy + ', ' + rx + ', ' + ry + ',\n';
           break;
     }
