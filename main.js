@@ -82,12 +82,12 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
-        if (svgElement.getAttribute('transform')) {
+        if (svgElement.getAttribute('transform'))
           output += "<g> with a transform not handled\n";
-          break;
-        }
+        else
+          output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY);
 
-        return HandleNode(svgElement, scaleX, scaleY, translateX, translateY);
+        break;
 
       // PATH ------------------------------------------------------------------
       case 'path':
