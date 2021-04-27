@@ -98,6 +98,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
         if (svgElement.getAttribute('fill') == 'none' && !isStrokePath)
           break;
 
+        output += "NEW_PATH,\n";
+
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
         if (path.slice(-1).toLowerCase() !== 'z')
@@ -219,6 +221,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
+        output += "NEW_PATH,\n";
+
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
         cx += translateX;
@@ -231,6 +235,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
       // RECT ------------------------------------------------------------------
       case 'rect':
+        output += "NEW_PATH,\n";
+
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
@@ -251,6 +257,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
 
       // OVAL ----------------------------------------------------------------
       case 'ellipse':
+          output += "NEW_PATH,\n";
+
           var cx = parseFloat(svgElement.attr('cx')) || 0;
           cx *= scaleX;
           cx += translateX;
