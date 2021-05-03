@@ -75,27 +75,64 @@ function RoundToHundredths(x) {
   return Math.floor(x * 100 + 0.5) / 100;
 }
 
-function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
+// |fillString| is expected to be "#RRGGBB" or "#RGB".
+function ParseFillStringToPathColor(fillString) {
+  if (fillString.length === 4) {
+    // Color in form of #RGB so let's turn that to #RRGGBB.
+    fillString = `#${fillString[1]}${fillString[1]}${fillString[2]}${fillString[2]}${fillString[3]}${fillString[3]}`.toUpperCase();
+  }
+
+  const r = fillString.substr(1,2);
+  const g = fillString.substr(3,2);
+  const b = fillString.substr(5,2);
+
+  return `PATH_COLOR_ARGB, 0xFF, 0x${r}, 0x${g}, 0x${b},\n`;
+}
+
+// This method will parse the fill for |element| and if the fill
+// is valid and usable, will return the corresponding path color command. If
+// the fill is unusable, will return empty string.
+function GetPathColorCommandFromFill(element) {
+  const supportedSVGElements = ['path', 'circle', 'rect'];
+  const isElementSupported = supportedSVGElements.includes(element.tagName);
+  const fill = element.getAttribute('fill');
+  if (isElementSupported && fill && fill !== 'none') {
+    // Colors in form #FFF or #FFFFFF.
+    const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
+    const fillMatch = fill.match(hexColorRegExp);
+    if (fillMatch && fillMatch.length === 1)
+      return ParseFillStringToPathColor(fillMatch[0]);
+  }
+
+  return '';
+}
+
+function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
+    if (idx !== 0)
+        output += "NEW_PATH,\n";
+
     var svgElement = svgNode.children[idx];
+
+    if (preserveFill)
+      output += GetPathColorCommandFromFill(svgElement);
+
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
         if (svgElement.getAttribute('transform'))
           output += "<g> with a transform not handled\n";
         else
-          output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY);
+          output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
 
         break;
 
       // PATH ------------------------------------------------------------------
       case 'path':
-        var isStrokePath = svgElement.getAttribute('stroke') &&
-                           svgElement.getAttribute('stroke') != 'none';
-        // If fill is none and doesn't have stroke, this is probably one of those worthless paths
-        // of the form <path fill="none" d="M0 0h24v24H0z"/>
-        if (svgElement.getAttribute('fill') == 'none' && !isStrokePath)
+        // If fill is none, this is probably one of those worthless elements
+        // of the form <path fill="none" d="M0 0h24v24H0z"/>, so we skip.
+        if (svgElement.getAttribute('fill') == 'none')
           break;
 
         output += "NEW_PATH,\n";
@@ -197,6 +234,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY) {
           path = path.trim();
         }
 
+        var isStrokePath = svgElement.getAttribute('stroke') &&
+                           svgElement.getAttribute('stroke') != 'none';
         if (isStrokePath) {
           var strokeWidth =  svgElement.getAttribute('stroke-width');
           if (!strokeWidth || isNaN(strokeWidth))
@@ -284,6 +323,7 @@ function ConvertInput() {
 
   var scaleX = $('flip-x').checked ? -1 : 1;
   var scaleY = $('flip-y').checked ? -1 : 1;
+  var preserveFill = $('preserve-fill').checked;
 
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
@@ -295,7 +335,7 @@ function ConvertInput() {
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
-  output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY);
+  output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
   // Truncate final comma and newline.
   $('output-span').textContent = output.slice(0, -2);
 }
