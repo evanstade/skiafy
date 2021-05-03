@@ -63,3 +63,12 @@ html {
 pre {
   -webkit-margin-start: 2em;
 }
+
+input:not(:checked) ~ .limitation {
+  display: none;
+}
+
+.limitation {
+  color: grey;
+  font-style: italic;
+}
