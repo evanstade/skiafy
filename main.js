@@ -33,6 +33,11 @@ function ToCommand(letter) {
     case 'c':
     case 's':
       return 'R_CUBIC_TO';
+    case 'Q': return 'QUADRATIC_TO';
+    case 'T': return 'QUADRATIC_TO_SHORTHAND';
+    case 'q':
+    case 't':
+      return 'R_QUADRATIC_TO';
     case 'Z':
     case 'z':
       return 'CLOSE';
@@ -47,7 +52,11 @@ function LengthForSvgDirective(letter) {
     case 's':
       return 6;
     case 'S':
+    case 'Q':
+    case 'q':
+    case 't':
       return 4;
+    case 'T':
     case 'L':
     case 'l':
     case 'H':
@@ -112,12 +121,12 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
-        if (svgElement.getAttribute('transform')) {
+        if (svgElement.getAttribute('transform'))
           output += "<g> with a transform not handled\n";
-          break;
-        }
+        else
+          output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
 
-        return HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
+        break;
 
       // PATH ------------------------------------------------------------------
       case 'path':
@@ -125,6 +134,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
         // of the form <path fill="none" d="M0 0h24v24H0z"/>, so we skip.
         if (svgElement.getAttribute('fill') == 'none')
           break;
+
+        output += "NEW_PATH,\n";
 
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
@@ -155,21 +166,27 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
               pathNeedsPruning = false;
             }
 
-            // Insert implicit points.
-            if (svgDirective.toLowerCase() == 's' && currentCommand.args.length == 0) {
-              if (svgDirective == 's') {
+            // Insert implicit points for cubic and quadratic curves.
+            var isQuadraticOrCubic = svgDirective.toLowerCase() == 's' || svgDirective.toLowerCase() == 't';
+            if (isQuadraticOrCubic && currentCommand.args.length == 0) {
+              if (svgDirective == 's' || svgDirective == 't') {
                 var lastCommand = commands[commands.length - 2];
-                if (ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) {
+                // Make sure relative 's' directives can only match with
+                // previous cubic commands, and that relative 't' directives can
+                // only match with previous quadratic commands.
+                if ((svgDirective == 's' && ToCommand(lastCommand.command).search('CUBIC_TO') >= 0) ||
+                    (svgDirective == 't' && ToCommand(lastCommand.command).search('QUADRATIC_TO') >= 0)) {
                   // The first control point is assumed to be the reflection of
-                  // the second control point on the previous command relative
+                  // the last control point on the previous command relative
                   // to the current point.
                   var lgth = lastCommand.args.length;
                   currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 2] - lastCommand.args[lgth - 4]));
                   currentCommand.args.push(RoundToHundredths(lastCommand.args[lgth - 1] - lastCommand.args[lgth - 3]));
                 } else {
-                  // "If there is no previous command or if the previous command
-                  // was not an C, c, S or s, assume the first control point is
-                  // coincident with the current point."
+                  // If there is no previous command or if the previous command
+                  // was not an C, c, S or s for cubics, or Q, q, T, t for
+                  // quadratics, assume the first control point is coincident with
+                  // the current point.
                   currentCommand.args.push(0);
                   currentCommand.args.push(0);
                 }
@@ -221,7 +238,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
                            svgElement.getAttribute('stroke') != 'none';
         if (isStrokePath) {
           var strokeWidth =  svgElement.getAttribute('stroke-width');
-          if (!strokeWidth || isNan(strokeWidth))
+          if (!strokeWidth || isNaN(strokeWidth))
             strokeWidth = 1;
 
           output += 'STROKE, ' + strokeWidth + ',\n';
@@ -243,6 +260,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
+        output += "NEW_PATH,\n";
+
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
         cx += translateX;
@@ -255,6 +274,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // RECT ------------------------------------------------------------------
       case 'rect':
+        output += "NEW_PATH,\n";
+
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
@@ -272,6 +293,21 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
           round = '0';
         output += round + ',\n';
         break;
+
+      // OVAL ----------------------------------------------------------------
+      case 'ellipse':
+          output += "NEW_PATH,\n";
+
+          var cx = parseFloat(svgElement.getAttribute('cx')) || 0;
+          cx *= scaleX;
+          cx += translateX;
+          var cy = parseFloat(svgElement.getAttribute('cy')) || 0;
+          cy *= scaleY;
+          cy += translateY;
+          var rx = parseFloat(svgElement.getAttribute('rx')) || 0;
+          var ry = parseFloat(svgElement.getAttribute('ry')) || 0;
+          output += 'OVAL, ' + cx + ', ' + cy + ', ' + rx + ', ' + ry + ',\n';
+          break;
     }
   }
   return output;
