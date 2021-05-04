@@ -77,9 +77,11 @@ function RoundToHundredths(x) {
 
 // |fillString| is expected to be "#RRGGBB" or "#RGB".
 function ParseFillStringToPathColor(fillString) {
+  fillString = fillString.toUpperCase();
+
   if (fillString.length === 4) {
     // Color in form of #RGB so let's turn that to #RRGGBB.
-    fillString = `#${fillString[1]}${fillString[1]}${fillString[2]}${fillString[2]}${fillString[3]}${fillString[3]}`.toUpperCase();
+    fillString = `#${fillString[1]}${fillString[1]}${fillString[2]}${fillString[2]}${fillString[3]}${fillString[3]}`;
   }
 
   const r = fillString.substr(1,2);
