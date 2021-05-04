@@ -93,10 +93,8 @@ function ParseFillStringToPathColor(fillString) {
 // is valid and usable, will return the corresponding path color command. If
 // the fill is unusable, will return empty string.
 function GetPathColorCommandFromFill(element) {
-  const supportedSVGElements = ['path', 'circle', 'rect'];
-  const isElementSupported = supportedSVGElements.includes(element.tagName);
   const fill = element.getAttribute('fill');
-  if (isElementSupported && fill && fill !== 'none') {
+  if (fill && fill !== 'none') {
     // Colors in form #FFF or #FFFFFF.
     const hexColorRegExp = /^#([0-9a-f]{3})$|^#([0-9a-f]{6})$/gi;
     const fillMatch = fill.match(hexColorRegExp);
@@ -110,14 +108,7 @@ function GetPathColorCommandFromFill(element) {
 function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
-    if (idx !== 0)
-        output += "NEW_PATH,\n";
-
     var svgElement = svgNode.children[idx];
-
-    if (preserveFill)
-      output += GetPathColorCommandFromFill(svgElement);
-
     switch (svgElement.tagName) {
       // g ---------------------------------------------------------------------
       case 'g':
@@ -136,6 +127,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
           break;
 
         output += "NEW_PATH,\n";
+        if (preserveFill)
+          output += GetPathColorCommandFromFill(svgElement);
 
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
@@ -261,6 +254,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
         output += "NEW_PATH,\n";
+        if (preserveFill)
+          output += GetPathColorCommandFromFill(svgElement);
 
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
@@ -275,6 +270,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       // RECT ------------------------------------------------------------------
       case 'rect':
         output += "NEW_PATH,\n";
+        if (preserveFill)
+          output += GetPathColorCommandFromFill(svgElement);
 
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
@@ -297,6 +294,8 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       // OVAL ----------------------------------------------------------------
       case 'ellipse':
           output += "NEW_PATH,\n";
+          if (preserveFill)
+            output += GetPathColorCommandFromFill(svgElement);
 
           var cx = parseFloat(svgElement.getAttribute('cx')) || 0;
           cx *= scaleX;
