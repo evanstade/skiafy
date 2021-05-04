@@ -122,7 +122,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       // g ---------------------------------------------------------------------
       case 'g':
         if (svgElement.getAttribute('transform'))
-          output += "<g> with a transform not handled\n";
+          throw new Error("<g> with a transform not handled");
         else
           output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
 
@@ -335,7 +335,13 @@ function ConvertInput() {
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
-  output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+  try {
+    output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+  } catch (e) {
+    $('output-span').textContent = e.name + ": " + e.message;
+    return;
+  }
+
   // Truncate final comma and newline.
   $('output-span').textContent = output.slice(0, -2);
 }
