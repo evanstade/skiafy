@@ -67,7 +67,7 @@ function LengthForSvgDirective(letter) {
     case 'A':
     case 'a':
       return 7;
-  };
+  }
   return 999;
 }
 
