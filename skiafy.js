@@ -1,4 +1,4 @@
-// Copyright 2019 The Skiafy Authors
+// Copyright 2021 The Skiafy Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
     if (idx !== 0)
-        output += "NEW_PATH,\n";
+        output += 'NEW_PATH,\n';
 
     var svgElement = svgNode.children[idx];
 
@@ -124,7 +124,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       // g ---------------------------------------------------------------------
       case 'g':
         if (svgElement.getAttribute('transform'))
-          throw new Error("<g> with a transform not handled");
+          throw new Error('<g> with a transform not handled');
         else
           output += HandleNode(svgElement, scaleX, scaleY, translateX, translateY, preserveFill);
 
@@ -137,7 +137,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
         if (svgElement.getAttribute('fill') == 'none')
           break;
 
-        output += "NEW_PATH,\n";
+        output += 'NEW_PATH,\n';
 
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
@@ -163,7 +163,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
                 currentCommand.args.length >= 3 &&
                 currentCommand.args.length <= 4) {
               point = parseInt(path[0]);
-              console.assert(point == 0 || point == 1, "Unexpected arc argument " << point);
+              console.assert(point == 0 || point == 1, 'Unexpected arc argument ' << point);
               path = path.substr(1);
               pathNeedsPruning = false;
             }
@@ -262,7 +262,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
-        output += "NEW_PATH,\n";
+        output += 'NEW_PATH,\n';
 
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
@@ -276,7 +276,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // RECT ------------------------------------------------------------------
       case 'rect':
-        output += "NEW_PATH,\n";
+        output += 'NEW_PATH,\n';
 
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
@@ -298,7 +298,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // OVAL ----------------------------------------------------------------
       case 'ellipse':
-          output += "NEW_PATH,\n";
+          output += 'NEW_PATH,\n';
 
           var cx = parseFloat(svgElement.getAttribute('cx')) || 0;
           cx *= scaleX;
@@ -315,39 +315,13 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   return output;
 }
 
-function ConvertInput() {
-  var translateX = parseFloat($('transform-x').value);
-  var translateY = parseFloat($('transform-y').value);
-  if (isNaN(translateX))
-    translateX = 0;
-  if (isNaN(translateY))
-    translateY = 0;
-
-  var scaleX = $('flip-x').checked ? -1 : 1;
-  var scaleY = $('flip-y').checked ? -1 : 1;
-  var preserveFill = $('preserve-fill').checked;
-
-  var input = $('user-input').value;
-  $('svg-anchor').innerHTML = input;
+function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
-  var svgNode = $('svg-anchor').querySelector('svg');
+  var canvasSize = svgNode.viewBox.baseVal.width;
+  if (canvasSize == 0)
+    canvasSize = svgNode.width.baseVal.value;
+  if (canvasSize != 48)
+    output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
-  try {
-    output = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
-  } catch (e) {
-    $('output-span').textContent = e.name + ": " + e.message;
-    return;
-  }
-
-  // Truncate final comma and newline.
-  $('output-span').textContent = output.slice(0, -2);
+  return output + HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
 }
-
-function init() {
-  $('go-button').addEventListener('click', ConvertInput);
-
-  if (navigator.userAgent.indexOf("WebKit") >= 0)
-    $('use-webkit').hidden = true;
-}
-
-window.onload = init;
