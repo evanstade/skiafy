@@ -339,8 +339,7 @@ function ConvertInput() {
     return;
   }
 
-  // Truncate final comma and newline.
-  $('output-span').textContent = output.slice(0, -2);
+  $('output-span').textContent = output;
 }
 
 function init() {

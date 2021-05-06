@@ -23,13 +23,12 @@ R_V_LINE_TO, -9,
 R_LINE_TO, 6, -4.5f,
 R_LINE_TO, 6, 4.5f,
 R_V_LINE_TO, 9,
-CLOSE
-`},
+CLOSE`},
 
 'color_home': {
 svg:
 `
-<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="#ABC"/><path d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="#ABC" d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"/></svg>
 `,
 expected:
 `CANVAS_DIMENSIONS, 24,
@@ -51,6 +50,5 @@ R_V_LINE_TO, -9,
 R_LINE_TO, 6, -4.5f,
 R_LINE_TO, 6, 4.5f,
 R_V_LINE_TO, 9,
-CLOSE
-`}
+CLOSE`}
 };

@@ -112,7 +112,7 @@ function GetPathColorCommandFromFill(element) {
 function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
-    if (idx !== 0)
+    if (idx !== 0 && output)
         output += 'NEW_PATH,\n';
 
     var svgElement = svgNode.children[idx];
@@ -136,8 +136,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
         // of the form <path fill="none" d="M0 0h24v24H0z"/>, so we skip.
         if (svgElement.getAttribute('fill') == 'none')
           break;
-
-        output += 'NEW_PATH,\n';
 
         var commands = [];
         var path = svgElement.getAttribute('d').replace(/,/g, ' ').trim();
@@ -323,5 +321,7 @@ function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
-  return output + HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+  output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+  // Truncate final comma and newline.
+  return output.slice(0, -2);
 }

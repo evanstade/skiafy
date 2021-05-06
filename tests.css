@@ -19,7 +19,10 @@ limitations under the License. */
 .testName {
   display: block;
   font-weight: bold;
-  color: lightgreen;
+}
+
+.test-output:not(.failedTest) .testName::after {
+  content: ' \2705';
 }
 
 .failedTest .testName::after {
