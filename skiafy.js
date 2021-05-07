@@ -1,4 +1,4 @@
-// Copyright 2021 The Skiafy Authors
+// Copyright 2019 The Skiafy Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -325,3 +325,39 @@ function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   // Truncate final comma and newline.
   return output.slice(0, -2);
 }
+
+function ConvertInput() {
+  var translateX = parseFloat($('transform-x').value);
+  var translateY = parseFloat($('transform-y').value);
+  if (isNaN(translateX))
+    translateX = 0;
+  if (isNaN(translateY))
+    translateY = 0;
+
+  var scaleX = $('flip-x').checked ? -1 : 1;
+  var scaleY = $('flip-y').checked ? -1 : 1;
+  var preserveFill = $('preserve-fill').checked;
+
+  var input = $('user-input').value;
+  $('svg-anchor').innerHTML = input;
+  var output = '';
+  var svgNode = $('svg-anchor').querySelector('svg');
+
+  try {
+    output = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+  } catch (e) {
+    $('output-span').textContent = e.name + ": " + e.message;
+    return;
+  }
+
+  $('output-span').textContent = output;
+}
+
+function init() {
+  $('go-button').addEventListener('click', ConvertInput);
+
+  if (navigator.userAgent.indexOf("WebKit") >= 0)
+    $('use-webkit').hidden = true;
+}
+
+window.onload = init;
