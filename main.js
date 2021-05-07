@@ -42,8 +42,8 @@ function ConvertInput() {
 function init() {
   $('go-button').addEventListener('click', ConvertInput);
 
-  if (navigator.userAgent.indexOf("WebKit") >= 0)
-    $('use-webkit').hidden = true;
+  if (navigator.userAgent.indexOf("WebKit") < 0)
+    $('use-webkit').hidden = false;
 }
 
 window.onload = init;
