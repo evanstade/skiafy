@@ -13,30 +13,20 @@
 // limitations under the License.
 
 function ConvertInput() {
-  var translateX = parseFloat($('transform-x').value);
-  var translateY = parseFloat($('transform-y').value);
-  if (isNaN(translateX))
-    translateX = 0;
-  if (isNaN(translateY))
-    translateY = 0;
-
+  var translateX = parseFloat($('transform-x').value) || 0;
+  var translateY = parseFloat($('transform-y').value) || 0;
   var scaleX = $('flip-x').checked ? -1 : 1;
   var scaleY = $('flip-y').checked ? -1 : 1;
   var preserveFill = $('preserve-fill').checked;
 
-  var input = $('user-input').value;
-  $('svg-anchor').innerHTML = input;
-  var output = '';
+  $('svg-anchor').innerHTML = $('user-input').value;
   var svgNode = $('svg-anchor').querySelector('svg');
 
   try {
-    output = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+    $('output-span').textContent = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
   } catch (e) {
     $('output-span').textContent = e.name + ": " + e.message;
-    return;
   }
-
-  $('output-span').textContent = output;
 }
 
 function init() {
