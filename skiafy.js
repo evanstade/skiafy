@@ -112,7 +112,7 @@ function GetPathColorCommandFromFill(element) {
 function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
   for (var idx = 0; idx < svgNode.children.length; ++idx) {
-    if (idx !== 0 && output)
+    if (output)
         output += 'NEW_PATH,\n';
 
     var svgElement = svgNode.children[idx];
