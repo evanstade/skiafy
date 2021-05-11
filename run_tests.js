@@ -16,6 +16,9 @@ testCases = [
   { name: 'home' },
   { name: 'color_home', preserveFill: true },
   { name: 'color_home', preserveFill: false, expected: 'home' },
+  { name: 'circles' },
+  { name: 'squares' },
+  { name: 'ovals' },
 ]
 
 function runTests() {
