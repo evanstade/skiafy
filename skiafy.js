@@ -288,9 +288,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
         output += 'ROUND_RECT, ' + x + ', ' + y + ', ' + width + ', ' + height +
             ', ';
 
-        var round = svgElement.getAttribute('rx');
-        if (!round)
-          round = '0';
+        var round = svgElement.getAttribute('rx') || '0';
         output += round + ',\n';
         break;
 
