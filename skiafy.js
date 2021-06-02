@@ -260,8 +260,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // CIRCLE ----------------------------------------------------------------
       case 'circle':
-        output += 'NEW_PATH,\n';
-
         var cx = parseFloat(svgElement.getAttribute('cx'));
         cx *= scaleX;
         cx += translateX;
@@ -274,8 +272,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // RECT ------------------------------------------------------------------
       case 'rect':
-        output += 'NEW_PATH,\n';
-
         var x = parseFloat(svgElement.getAttribute('x')) || 0;
         x *= scaleX;
         x += translateX;
@@ -296,8 +292,6 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
       // OVAL ----------------------------------------------------------------
       case 'ellipse':
-          output += 'NEW_PATH,\n';
-
           var cx = parseFloat(svgElement.getAttribute('cx')) || 0;
           cx *= scaleX;
           cx += translateX;

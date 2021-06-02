@@ -50,5 +50,50 @@ R_V_LINE_TO, -9,
 R_LINE_TO, 6, -4.5f,
 R_LINE_TO, 6, 4.5f,
 R_V_LINE_TO, 9,
-CLOSE`}
+CLOSE`},
+
+'circles': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="6" cy="6" r="3"/><circle cx="14" cy="6" r="3"/><circle cx="6" cy="14" r="3"/><circle cx="14" cy="14" r="3"/></svg>
+`,
+expected:
+`CANVAS_DIMENSIONS, 20,
+CIRCLE, 6, 6, 3,
+NEW_PATH,
+CIRCLE, 14, 6, 3,
+NEW_PATH,
+CIRCLE, 6, 14, 3,
+NEW_PATH,
+CIRCLE, 14, 14, 3`},
+
+'squares': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect x="3" y="3" width="6" height="6"/><rect x="11" y="3" width="6" height="6"/><rect x="3" y="11" width="6" height="6"/><rect x="11" y="11" width="6" height="6"/></svg>
+`,
+expected:
+`CANVAS_DIMENSIONS, 20,
+ROUND_RECT, 3, 3, 6, 6, 0,
+NEW_PATH,
+ROUND_RECT, 11, 3, 6, 6, 0,
+NEW_PATH,
+ROUND_RECT, 3, 11, 6, 6, 0,
+NEW_PATH,
+ROUND_RECT, 11, 11, 6, 6, 0`},
+
+'ovals': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><ellipse cx="6" cy="6" rx="3" ry="2"/><ellipse cx="14" cy="6" rx="2" ry="3"/><ellipse cx="6" cy="14" ry="2" rx="3"/><ellipse cx="14" cy="14" rx="2" ry="3"/></svg>
+`,
+expected:
+`CANVAS_DIMENSIONS, 20,
+OVAL, 6, 6, 3, 2,
+NEW_PATH,
+OVAL, 14, 6, 2, 3,
+NEW_PATH,
+OVAL, 6, 14, 3, 2,
+NEW_PATH,
+OVAL, 14, 14, 2, 3`},
 };
