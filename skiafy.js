@@ -63,6 +63,8 @@ function LengthForSvgDirective(letter) {
     case 'h':
     case 'V':
     case 'v':
+    case 'm':
+    case 'M':
       return 2;
     case 'A':
     case 'a':
@@ -151,6 +153,10 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
             var currentCommand = commands[commands.length - 1];
             var svgDirective = currentCommand.command;
             if (currentCommand.args.length == LengthForSvgDirective(svgDirective)) {
+              // If a moveto has more than 2 arguments, the rest of them are
+              // implicitly linetos.
+              if (svgDirective == 'm') svgDirective = 'l';
+              else if (svgDirective == 'M') svgDirective = 'L';
               commands.push({ 'command': svgDirective, 'args': [] });
               currentCommand = commands[commands.length - 1];
               svgDirective = currentCommand.command;
