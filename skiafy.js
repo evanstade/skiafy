@@ -152,11 +152,15 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
           } else {
             var currentCommand = commands[commands.length - 1];
             var svgDirective = currentCommand.command;
+
+            // Repeated sets of arguments imply the command is repeated, unless the current
+            // command is moveto, which implies that the rest are implicitly linetos.
             if (currentCommand.args.length == LengthForSvgDirective(svgDirective)) {
-              // If a moveto has more than 2 arguments, the rest of them are
-              // implicitly linetos.
-              if (svgDirective == 'm') svgDirective = 'l';
-              else if (svgDirective == 'M') svgDirective = 'L';
+              if (svgDirective == 'm')
+                svgDirective = 'l';
+              else if (svgDirective == 'M')
+                svgDirective = 'L';
+              
               commands.push({ 'command': svgDirective, 'args': [] });
               currentCommand = commands[commands.length - 1];
               svgDirective = currentCommand.command;
