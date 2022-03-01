@@ -50,5 +50,28 @@ R_V_LINE_TO, -9,
 R_LINE_TO, 6, -4.5f,
 R_LINE_TO, 6, 4.5f,
 R_V_LINE_TO, 9,
-CLOSE`}
+CLOSE`},
+
+'implicit_lineto': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" width="16"><path d="M1,2 3,4"/></svg>
+`,
+expected:
+`CANVAS_DIMENSIONS, 16,
+MOVE_TO, 1, 2,
+LINE_TO, 3, 4,
+CLOSE`},
+
+'implicit_r_lineto': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" width="16"><path d="m1 2 4 3 1 1Z"/></svg>
+`,
+expected:
+`CANVAS_DIMENSIONS, 16,
+R_MOVE_TO, 1, 2,
+R_LINE_TO, 4, 3,
+R_LINE_TO, 1, 1,
+CLOSE`},
 };

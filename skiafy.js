@@ -63,6 +63,8 @@ function LengthForSvgDirective(letter) {
     case 'h':
     case 'V':
     case 'v':
+    case 'm':
+    case 'M':
       return 2;
     case 'A':
     case 'a':
@@ -150,7 +152,15 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
           } else {
             var currentCommand = commands[commands.length - 1];
             var svgDirective = currentCommand.command;
+
+            // Repeated sets of arguments imply the command is repeated, unless the current
+            // command is moveto, which implies that the rest are implicitly linetos.
             if (currentCommand.args.length == LengthForSvgDirective(svgDirective)) {
+              if (svgDirective == 'm')
+                svgDirective = 'l';
+              else if (svgDirective == 'M')
+                svgDirective = 'L';
+              
               commands.push({ 'command': svgDirective, 'args': [] });
               currentCommand = commands[commands.length - 1];
               svgDirective = currentCommand.command;

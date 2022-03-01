@@ -16,6 +16,8 @@ testCases = [
   { name: 'home' },
   { name: 'color_home', preserveFill: true },
   { name: 'color_home', preserveFill: false, expected: 'home' },
+  { name: 'implicit_lineto' },
+  { name: 'implicit_r_lineto' },
 ]
 
 function runTests() {
