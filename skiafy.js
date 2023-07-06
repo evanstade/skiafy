@@ -323,14 +323,28 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
   return output;
 }
 
-function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
+function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill, fixViewbox) {
   var output = '';
   var canvasSize = svgNode.viewBox.baseVal.width;
   if (canvasSize == 0)
     canvasSize = svgNode.width.baseVal.value;
+  
+  if (fixViewbox) {
+    var scaleFactor = svgNode.width.baseVal.value / svgNode.viewBox.baseVal.width;
+    canvasSize *= scaleFactor;
+    scaleX *= scaleFactor;
+    scaleY *= scaleFactor;
+    if (svgNode.viewBox.baseVal.y < 0) {
+      translateY -= svgNode.viewBox.baseVal.y * scaleFactor;
+    }   
+    if (svgNode.viewBox.baseVal.x < 0) {
+      translateY -= svgNode.viewBox.baseVal.y * scaleFactor;
+    }
+  }
+
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
-
+    
   output += HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
   // Truncate final comma and newline.
   return output.slice(0, -2);

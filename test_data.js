@@ -74,4 +74,19 @@ R_MOVE_TO, 1, 2,
 R_LINE_TO, 4, 3,
 R_LINE_TO, 1, 1,
 CLOSE`},
+
+'fix_viewbox': {
+svg:
+`
+<svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z"/></svg>`,
+expected:
+`MOVE_TO, 18.9f, 35.7f,
+LINE_TO, 7.7f, 24.5f,
+R_LINE_TO, 2.15f, -2.15f,
+R_LINE_TO, 9.05f, 9.05f,
+R_LINE_TO, 19.2f, -19.2f,
+R_LINE_TO, 2.15f, 2.15f,
+R_LINE_TO, -21.35f, 21.35f,
+CLOSE`},
+    
 };
