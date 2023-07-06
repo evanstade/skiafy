@@ -44,6 +44,15 @@ function init() {
 
   if (navigator.userAgent.indexOf("WebKit") < 0)
     $('use-webkit').hidden = false;
+
+  addEventListener("drop", (ev) => {
+    ev.preventDefault();
+    var reader = new FileReader();
+    reader.onload = ev => {
+      $('user-input').value = ev.target.result;
+    };
+    reader.readAsText(ev.dataTransfer.files[0]);
+  });
 }
 
 window.onload = init;
