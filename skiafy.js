@@ -338,7 +338,7 @@ function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
       translateY -= svgNode.viewBox.baseVal.y * scaleFactor;
     }   
     if (svgNode.viewBox.baseVal.x < 0) {
-      translateY -= svgNode.viewBox.baseVal.y * scaleFactor;
+      translateX -= svgNode.viewBox.baseVal.x * scaleFactor;
     }
   }
 
