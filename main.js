@@ -23,7 +23,7 @@ function ConvertInput() {
   var scaleX = $('flip-x').checked ? -1 : 1;
   var scaleY = $('flip-y').checked ? -1 : 1;
   var preserveFill = $('preserve-fill').checked;
-  var fixViewbox = $('rescale-viewbox').checked;
+  var fixViewbox = $('fix-viewbox').checked;
 
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
