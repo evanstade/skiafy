@@ -18,6 +18,7 @@ testCases = [
   { name: 'color_home', preserveFill: false, expected: 'home' },
   { name: 'implicit_lineto' },
   { name: 'implicit_r_lineto' },
+  { name: 'fix_viewbox', fixViewbox: true },
 ]
 
 function runTests() {
@@ -29,8 +30,10 @@ function runTests() {
       svgAnchor.innerHTML = testData[name].svg;
 
       var preserveFill = testCases[i].preserveFill || false;
+      
+      var fixViewbox = testCases[i].fixViewbox || false;
 
-      var output = ProcessSvg(svgAnchor.querySelector('svg'), 1, 1, 0, 0, preserveFill);
+      var output = ProcessSvg(svgAnchor.querySelector('svg'), 1, 1, 0, 0, preserveFill, fixViewbox);
 
       var expected = testCases[i].expected || name;
       var expectedOutput = testData[expected]['expected'];

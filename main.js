@@ -23,6 +23,7 @@ function ConvertInput() {
   var scaleX = $('flip-x').checked ? -1 : 1;
   var scaleY = $('flip-y').checked ? -1 : 1;
   var preserveFill = $('preserve-fill').checked;
+  var fixViewbox = $('fix-viewbox').checked;
 
   var input = $('user-input').value;
   $('svg-anchor').innerHTML = input;
@@ -30,9 +31,10 @@ function ConvertInput() {
   var svgNode = $('svg-anchor').querySelector('svg');
 
   try {
-    output = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill);
+    output = ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill, fixViewbox);
   } catch (e) {
     $('output-span').textContent = e.name + ": " + e.message;
+    console.log(e);
     return;
   }
 
