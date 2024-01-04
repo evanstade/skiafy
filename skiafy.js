@@ -59,13 +59,14 @@ function LengthForSvgDirective(letter) {
     case 'T':
     case 'L':
     case 'l':
+    case 'm':
+    case 'M':
+      return 2;
     case 'H':
     case 'h':
     case 'V':
     case 'v':
-    case 'm':
-    case 'M':
-      return 2;
+      return 1;
     case 'A':
     case 'a':
       return 7;

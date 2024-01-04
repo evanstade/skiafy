@@ -18,6 +18,7 @@ testCases = [
   { name: 'color_home', preserveFill: false, expected: 'home' },
   { name: 'implicit_lineto' },
   { name: 'implicit_r_lineto' },
+  { name: 'repeat_r_vh_lineto' },
 ]
 
 function runTests() {
