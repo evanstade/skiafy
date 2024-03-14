@@ -326,9 +326,7 @@ function HandleNode(svgNode, scaleX, scaleY, translateX, translateY, preserveFil
 
 function ProcessSvg(svgNode, scaleX, scaleY, translateX, translateY, preserveFill) {
   var output = '';
-  var canvasSize = svgNode.viewBox.baseVal.width;
-  if (canvasSize == 0)
-    canvasSize = svgNode.width.baseVal.value;
+  var canvasSize = svgNode.viewBox.baseVal.width || svgNode.width.baseVal.value;
   if (canvasSize != 48)
     output += 'CANVAS_DIMENSIONS, ' + canvasSize + ',\n';
 
